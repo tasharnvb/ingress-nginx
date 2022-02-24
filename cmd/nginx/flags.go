@@ -199,6 +199,8 @@ Takes the form "<host>:port". If not provided, no admission controller is starte
 		shutdownGracePeriod = flags.Int("shutdown-grace-period", 0, "Seconds to wait after receiving the shutdown signal, before stopping the nginx process.")
 
 		postShutdownGracePeriod = flags.Int("post-shutdown-grace-period", 10, "Seconds to wait after the nginx process has stopped before controller exits.")
+
+		disableDefaultAnnotationCheck = flags.Bool("disable-default-annotation-check", false, `Disable checking the annotation prefix when a custom prefix is used`)
 	)
 
 	flags.StringVar(&nginx.MaxmindMirror, "maxmind-mirror", "", `Maxmind mirror url (example: http://geoip.local/databases`)
@@ -340,10 +342,11 @@ https://blog.maxmind.com/2019/12/18/significant-changes-to-accessing-and-using-g
 			WatchWithoutClass:  *watchWithoutClass,
 			IngressClassByName: *ingressClassByName,
 		},
-		DisableCatchAll:           *disableCatchAll,
-		ValidationWebhook:         *validationWebhook,
-		ValidationWebhookCertPath: *validationWebhookCert,
-		ValidationWebhookKeyPath:  *validationWebhookKey,
+		DisableCatchAll:               *disableCatchAll,
+		ValidationWebhook:             *validationWebhook,
+		ValidationWebhookCertPath:     *validationWebhookCert,
+		ValidationWebhookKeyPath:      *validationWebhookKey,
+		DisableDefaultAnnotationCheck: *disableDefaultAnnotationCheck,
 	}
 
 	if *apiserverHost != "" {

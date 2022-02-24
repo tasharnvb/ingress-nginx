@@ -252,6 +252,34 @@ func TestCheckIngress(t *testing.T) {
 			}
 		})
 
+		t.Run("When the default annotation prefix check is skipped even if an override is defined", func(t *testing.T) {
+			// reset the annotation prefix to its default at the end
+			defer func() {
+				parser.AnnotationsPrefix = "nginx.ingress.kubernetes.io"
+			}()
+
+			// change annotation prefix to something custom
+			parser.AnnotationsPrefix = "ingress.kubernetes.io"
+
+			disableDefaultAnnotationCheckBefore := nginx.cfg.DisableDefaultAnnotationCheck
+			nginx.cfg.DisableDefaultAnnotationCheck = true
+
+			// not 100% sure how this works but it's needed
+			nginx.command = testNginxTestCommand{
+				t:        t,
+				err:      nil,
+				expected: "_,test.example.com",
+			}
+
+			// check that there is no error
+			if nginx.CheckIngress(ing) != nil {
+				t.Errorf("with a new ingress without error, no error should be returned")
+			}
+
+			// reset flag
+			nginx.cfg.DisableDefaultAnnotationCheck = disableDefaultAnnotationCheckBefore
+		})
+
 		t.Run("When snippets are disabled and user tries to use snippet annotation", func(t *testing.T) {
 			nginx.store = fakeIngressStore{
 				ingresses: []*ingress.Ingress{},

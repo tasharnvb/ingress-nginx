@@ -120,6 +120,8 @@ type Configuration struct {
 
 	PostShutdownGracePeriod int
 	ShutdownGracePeriod     int
+
+	DisableDefaultAnnotationCheck bool
 }
 
 // GetPublishService returns the Service used to set the load-balancer status of Ingresses.
@@ -253,7 +255,7 @@ func (n *NGINXController) CheckIngress(ing *networking.Ingress) error {
 
 	for key, value := range ing.ObjectMeta.GetAnnotations() {
 
-		if parser.AnnotationsPrefix != parser.DefaultAnnotationsPrefix {
+		if !n.cfg.DisableDefaultAnnotationCheck && (parser.AnnotationsPrefix != parser.DefaultAnnotationsPrefix) {
 			if strings.HasPrefix(key, fmt.Sprintf("%s/", parser.DefaultAnnotationsPrefix)) {
 				return fmt.Errorf("This deployment has a custom annotation prefix defined. Use '%s' instead of '%s'", parser.AnnotationsPrefix, parser.DefaultAnnotationsPrefix)
 			}
